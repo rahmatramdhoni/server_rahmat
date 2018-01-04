@@ -68,10 +68,11 @@ class Apps extends CI_Controller {
 		$data['judul'] = 'Monitoring Lampu';
 		$data['subjudul'] = 'Tabel Monitoring Lampu';
 		$data['content'] = 'apps/monitoring_l';
-		$data['isi1'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 1'");
-		$data['isi2'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 2'");
-		$data['isi3'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 1'");
-		$data['test'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 1'");
+		$this->load->model('m_lampu');
+		$data['isi1'] = $this->m_lampu->tampil_lampu1();
+		$data['isi2'] = $this->m_lampu->tampil_lampu2();
+		//$data['isi3'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 1'");
+		//$data['test'] = $this->db->query("SELECT * FROM t_lampu WHERE lokasi='Lantai 1'");
 		
 		$this->load->view('Apps/admin',$data);
 	}
@@ -90,12 +91,8 @@ class Apps extends CI_Controller {
 	public function on($id)
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '1', 'datetime' => $waktu );
-		$this->db->where('id', $id);
-		$u = $this->db->UPDATE('t_lampu', $data);
-		
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->on($id);
 		if ($u) {
 			# code...
 			redirect('Apps/lampu');
@@ -105,11 +102,8 @@ class Apps extends CI_Controller {
 	public function off($id)
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '0', 'datetime' => $waktu );
-		$this->db->where('id', $id);
-		$u = $this->db->UPDATE('t_lampu', $data);
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->off($id);
 		
 		if ($u) {
 			# code...
@@ -120,11 +114,9 @@ class Apps extends CI_Controller {
 	public function on_lantai1()
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '1', 'datetime' => $waktu );
-		$this->db->where('lokasi', 'Lantai 1');
-		$u = $this->db->UPDATE('t_lampu', $data);
+		
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->onlantai1();
 		
 		if ($u) {
 			# code...
@@ -135,11 +127,8 @@ class Apps extends CI_Controller {
 	public function off_lantai1()
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '0', 'datetime' => $waktu );
-		$this->db->where('lokasi', 'Lantai 1');
-		$u = $this->db->UPDATE('t_lampu', $data);
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->offlantai1();
 		
 		if ($u) {
 			# code...
@@ -150,11 +139,8 @@ class Apps extends CI_Controller {
 	public function on_lantai2()
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '1', 'datetime' => $waktu );
-		$this->db->where('lokasi', 'Lantai 2');
-		$u = $this->db->UPDATE('t_lampu', $data);
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->onlantai2();
 		
 		if ($u) {
 			# code...
@@ -165,11 +151,8 @@ class Apps extends CI_Controller {
 	public function off_lantai2()
 	{
 		# code...
-		date_default_timezone_set('Asia/Jakarta');
-		$waktu = date('Y-m-d H:i:s');
-		$data = array('state' => '0', 'datetime' => $waktu );
-		$this->db->where('lokasi', 'Lantai 2');
-		$u = $this->db->UPDATE('t_lampu', $data);
+		$this->load->model('m_lampu');
+		$u = $this->m_lampu->offlantai2();
 		
 		if ($u) {
 			# code...
@@ -183,12 +166,23 @@ class Apps extends CI_Controller {
 		$data['judul'] = 'Monitoring Sensor';
 		$data['subjudul'] = 'Tabel Monitoring Sensor';
 		$data['content'] = 'apps/monitoring_s';
-		$data['isi1'] = $this->db->query("SELECT * FROM t_sensor WHERE nm_sensor='Sensor 1'");
-		$data['isi2'] = $this->db->query("SELECT * FROM t_sensor WHERE nm_sensor='Sensor 2'");
+		$this->load->model('sensor');
+		$data['isi1'] = $this->sensor->sensor1();
+		$data['isi2'] = $this->sensor->sensor2();
 		$this->load->view('Apps/admin',$data);
 	}
 	public function test_restful(){
 		header("content-type:json");
 		echo json_encode(array("data_json" => $this->mod_device->load_dataset()));
+	}
+
+	public function status_lampu(){
+		$data = $this->mod_device->status_lampu();
+		echo "#";
+		foreach ($data as $rows) {
+			echo $rows->state;
+		}
+		echo "^";
+
 	}
 }
